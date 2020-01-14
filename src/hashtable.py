@@ -1,6 +1,9 @@
 # '''
 # Linked List hash table key/value pair
 # '''
+import hashlib
+
+# essentially a Node
 class LinkedPair:
     def __init__(self, key, value):
         self.key = key
@@ -14,7 +17,9 @@ class HashTable:
     '''
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
+        self.count = 0
         self.storage = [None] * capacity
+        self.buckets = [LinkedPair(None, None) for x in range(0, self.capacity)]
 
 
     def _hash(self, key):
@@ -51,8 +56,17 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        if self.count == self.capacity:
+            # TODO: resize
+            print("error, hashtable is full")
+            return
+        
+        hashed_key = self._hash_mod(key)
+        # print(hashed_key)
+        # for i in range(self.count, hashed_key, -1):
+        self.buckets[hashed_key].value = value
+        
+        
 
 
     def remove(self, key):
@@ -74,7 +88,10 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        hashed_key = self._hash_mod(key)
+        for i in self.buckets:
+            if i == hashed_key:
+                return i.value
 
 
     def resize(self):
