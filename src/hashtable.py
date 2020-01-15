@@ -59,7 +59,7 @@ class HashTable:
         hashed_key = self._hash_mod(key)
         node = self.storage[hashed_key]
 
-        if node is None:
+        if node is None or node.key == key:
             self.storage[hashed_key] = LinkedPair(key, value)
             return 
 
@@ -69,12 +69,6 @@ class HashTable:
             node = node.next
             
         prev.next = LinkedPair(key, value)
-
-        # if self.count == self.capacity:
-        #     # TODO: resize
-        #     print("error, hashtable is full")
-        #     return
-        
 
 
     def remove(self, key):
@@ -94,12 +88,11 @@ class HashTable:
             node = node.next
         
         if node is None:
-            return
+            return None
         else:
             result = node.value
-
             if prev is None:
-                node = None
+                self.storage[hashed_key] = node.next
             else:
                 prev.next = prev.next.next
             
@@ -118,11 +111,14 @@ class HashTable:
         hashed_key = self._hash_mod(key)
         node = self.storage[hashed_key]
 
+        if node is None:
+            return None
+
         while node is not None and node.key != key:
             node = node.next
 
         if node is None:
-            return
+            return None
         else:
             return node.value
 
@@ -134,10 +130,15 @@ class HashTable:
 
         Fill this in.
         '''
-        self.capacity = self.capacity * 2
-        for node in self.storage:
-            
-
+        self.capacity *= 2
+        temp = self.storage
+        self.storage = [None] * self.capacity
+        for i in temp:
+            if i is not None:
+                current = i
+                while current is not None:
+                    self.insert(current.key, current.value)
+                    current = current.next
 
 
 if __name__ == "__main__":
@@ -165,5 +166,8 @@ if __name__ == "__main__":
     print(ht.retrieve("line_1"))
     print(ht.retrieve("line_2"))
     print(ht.retrieve("line_3"))
+
+    ht.insert("line_1", "this is UPDATED info")
+    print('UPDATED', ht.retrieve("line_1"))
 
     print("")
